@@ -28,8 +28,7 @@ public class SpiderdataApplication {
         RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
 
         CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
-        controller.addSeed("https://10.229.201.21:8463/ofx/ssomock");
-        controller.addSeed("https://10.229.201.21:8463/ofx/sso/15D0C107-3ED1-171D-0FDE-3DD11E587DCD");
+        controller.addSeed("http://www.baixing.com/");
 
         controller.start(MyCrawler.class, numberOfCrawlers);
 	}

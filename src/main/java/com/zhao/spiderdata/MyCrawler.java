@@ -19,7 +19,7 @@ public class MyCrawler extends WebCrawler {
     public boolean shouldVisit(Page referringPage, WebURL url) {
         String href = url.getURL().toLowerCase();
         return !FILTERS.matcher(href).matches()
-                && href.startsWith("https://10.229.201.21:8463/ofx");
+                && href.startsWith("http://www.baixing.com/");
     }
 
     @Override
