@@ -1,15 +1,14 @@
 package com.zhao.spiderdata;
 
-import com.zhao.spiderdata.pojo.TestBeans;
-import com.zhao.spiderdata.utils.ExcelUtils;
+import com.zhao.spiderdata.pojo.PersonInfo;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -19,11 +18,17 @@ public class MyCrawler extends WebCrawler {
     private final static Pattern FILTERS = Pattern.compile(".*(\\.(css|js|gif|jpg"
             + "|png|mp3|mp4|zip|gz))$");
 
+    Pattern URLFILTERS = Pattern.compile("(http://)\\S*\\.baixing.com\\/\\S+\\/\\ba\\d+\\.html\\?from=regular");
+    public static List<PersonInfo> list = new ArrayList<PersonInfo>();
+
     @Override
     public boolean shouldVisit(Page referringPage, WebURL url) {
         String href = url.getURL().toLowerCase();
+//        System.out.println(href);
         return !FILTERS.matcher(href).matches()
-                && href.startsWith("https://XXXXXXXX/");
+                && URLFILTERS.matcher(href).matches() && (href.startsWith("http://shanghai.baixing.com/zhenghun/")
+                || href.startsWith("http://shanghai.baixing.com/nanzhaonv/")
+                || href.startsWith("http://shanghai.baixing.com/juhui/"));
     }
 
     @Override
@@ -36,37 +41,49 @@ public class MyCrawler extends WebCrawler {
             String text = htmlParseData.getText();
             String html = htmlParseData.getHtml();
             Set<WebURL> links = htmlParseData.getOutgoingUrls();
+            System.out.println("Links counts: " + links.size());
+
             Document doc = Jsoup.parse(html);
-
-            List<TestBeans> list = new ArrayList<TestBeans>();
-            TestBeans test = new TestBeans();
-            test.setAid(doc.select("input[name=aid]").val());
-            test.setUserID(doc.select("input[name=userId]").val());
-            test.setCid(doc.select("input[name=cid]").val());
-            test.setCountry(doc.select("select[name=country]").select("option[selected]").text());
-            list.add(test);
-            list.add(test);
-            list.add(test);
-            list.add(test);
-            list.add(test);
-            list.add(test);
-            list.add(test);
-            list.add(test);
-            list.add(test);
-            list.add(test);
-
-
-            System.out.println("Aid: " + doc.select("input[name=aid]").val());
-            System.out.println("USERID: " + doc.select("input[name=userId]").val());
-            System.out.println("CID: " + doc.select("input[name=cid]").val());
-            System.out.println("COUNTRY: " + doc.select("select[name=country]").select("option[selected]").text());
-
-            try {
-                ExcelUtils.generateExcelFile(list);
-            } catch (IOException e) {
-                System.out.println("generate excel failed!");
-                e.printStackTrace();
+            PersonInfo personInfo = new PersonInfo();
+            personInfo.setName(doc.getElementsByClass("viewad-title").text());
+            System.out.println("name:" + doc.getElementsByClass("viewad-title").text());
+            if (doc.getElementById("mobileNumber") != null) {
+                String mobile = doc.getElementById("mobileNumber").childNodes().get(0).childNodes().get(0).toString();
+                personInfo.setMobileNumber(mobile);
+                System.out.println("mobile:" + mobile);
             }
+            if (doc.getElementsByClass("viewad-meta").select("li") != null) {
+                Elements details = doc.getElementsByClass("viewad-meta").select("li");
+                for (int i=0; i< details.size(); i++) {
+                    if (details.get(i).select("label").text().indexOf("性别") != -1) {
+                        personInfo.setSex(details.get(i).select("span").text());
+                        System.out.println("sex: " + details.get(i).select("span").text());
+                    }
+
+                    if (details.get(i).select("label").text().indexOf("年龄") != -1) {
+                        personInfo.setAge(details.get(i).select("span").text());
+                        System.out.println("age: " + details.get(i).select("span").text());
+                    }
+
+                    if (details.get(i).select("label").text().indexOf("职业") != -1) {
+                        personInfo.setJob(details.get(i).select("span").text());
+                        System.out.println("job: " + details.get(i).select("span").text());
+                    }
+
+                    if (details.get(i).select("label").text().indexOf("地址") != -1) {
+                        personInfo.setAddress(details.get(i).select("span").text());
+                        System.out.println("address: " + details.get(i).select("span").text());
+                    }
+                }
+            }
+            list.add(personInfo);
+//            System.out.println("description: " + doc.getElementsByClass("viewad-detail").text());
+//            try {
+//                ExcelUtils.generateExcelFile(list);
+//            } catch (IOException e) {
+//                System.out.println("generate excel failed!");
+//                e.printStackTrace();
+//            }
         }
     }
 }
