@@ -77,6 +77,8 @@ public class SpiderdataApplication {
             } catch (IOException e) {
                 System.out.println("generate excel failed!");
                 e.printStackTrace();
+            } finally {
+                MyCrawler.list.clear();
             }
         }
 

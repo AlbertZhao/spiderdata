@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class ExcelUtils {
 
-    public static <T> void generateExcelFile(List<T> list) throws IOException {
+    public static <T> void generateExcelFile(List<T> list, String path) throws IOException {
         Workbook[] wbs = new HSSFWorkbook[] { new HSSFWorkbook() };
         for (int i = 0; i < wbs.length; i++) {
             Workbook workbook = wbs[i];
@@ -74,7 +74,7 @@ public class ExcelUtils {
             }
 
             //保存
-            StringBuffer filename = new StringBuffer("C:\\Spec\\workbook");
+            StringBuffer filename = new StringBuffer(path);
             filename.append(UUID.randomUUID());
             filename.append(".xls");
             File file = new File(filename.toString());
