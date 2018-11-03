@@ -20,15 +20,16 @@ public class MyCrawler extends WebCrawler {
 
     Pattern URLFILTERS = Pattern.compile("(http://)\\S*\\.baixing.com\\/\\S+\\/\\ba\\d+\\.html\\?from=regular");
     public static List<PersonInfo> list = new ArrayList<PersonInfo>();
+    public static String city="shanghai";
 
     @Override
     public boolean shouldVisit(Page referringPage, WebURL url) {
         String href = url.getURL().toLowerCase();
 //        System.out.println(href);
         return !FILTERS.matcher(href).matches()
-                && URLFILTERS.matcher(href).matches() && (href.startsWith("http://shanghai.baixing.com/zhenghun/")
-                || href.startsWith("http://shanghai.baixing.com/nanzhaonv/")
-                || href.startsWith("http://shanghai.baixing.com/juhui/"));
+                && URLFILTERS.matcher(href).matches() && (href.startsWith("http://"+city+".baixing.com/zhenghun/")
+                || href.startsWith("http://"+city+".baixing.com/nanzhaonv/")
+                || href.startsWith("http://"+city+".baixing.com/juhui/"));
     }
 
     @Override
@@ -52,6 +53,8 @@ public class MyCrawler extends WebCrawler {
                 personInfo.setMobileNumber(mobile);
                 System.out.println("mobile:" + mobile);
             }
+            System.out.println("publishDate: " + doc.getElementsByClass("viewad-actions").select("span").get(0).text());
+            personInfo.setPublishDate(doc.getElementsByClass("viewad-actions").select("span").get(0).text());
             if (doc.getElementsByClass("viewad-meta").select("li") != null) {
                 Elements details = doc.getElementsByClass("viewad-meta").select("li");
                 for (int i=0; i< details.size(); i++) {

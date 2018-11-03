@@ -23,7 +23,7 @@ public class SpiderdataApplication {
 		if (args.length>0) {
             city = args[0];
         }
-        String crawlStorageFolder = "/Users/zhaoshijie/Downloads/proxy/";
+        String crawlStorageFolder = "C:\\data\\";
         int numberOfCrawlers = 3;
 
         CrawlConfig config = new CrawlConfig();
@@ -64,8 +64,10 @@ public class SpiderdataApplication {
             RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
             RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
             CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
+            System.out.println("From City " + city + "start!" );
             if (city != null){
                 controller.addSeed("http://" + city + ".baixing.com/huodong/?page=" + i);
+                MyCrawler.city = city;
             } else {
                 controller.addSeed("http://shanghai.baixing.com/huodong/?page=" + i);
             }
@@ -73,7 +75,7 @@ public class SpiderdataApplication {
 
 
             try {
-                ExcelUtils.generateExcelFile(MyCrawler.list,"/Users/zhaoshijie/Downloads/");
+                ExcelUtils.generateExcelFile(MyCrawler.list,"C:\\data\\");
             } catch (IOException e) {
                 System.out.println("generate excel failed!");
                 e.printStackTrace();

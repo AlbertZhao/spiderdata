@@ -8,6 +8,7 @@ public class PersonInfo {
     String job;
     String address;
     String details;
+    String publishDate;
 
     public String getName() {
         return name;
@@ -63,5 +64,13 @@ public class PersonInfo {
 
     public void setDetails(String details) {
         this.details = details;
+    }
+
+    public String getPublishDate() {
+        return publishDate;
+    }
+
+    public void setPublishDate(String publishDate) {
+        this.publishDate = publishDate;
     }
 }
