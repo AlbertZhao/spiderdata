@@ -11,6 +11,7 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -25,7 +26,7 @@ public class MyCrawler extends WebCrawler {
     @Override
     public boolean shouldVisit(Page referringPage, WebURL url) {
         String href = url.getURL().toLowerCase();
-//        System.out.println(href);
+        System.out.println(href);
         return !FILTERS.matcher(href).matches()
                 && URLFILTERS.matcher(href).matches() && (href.startsWith("http://"+city+".baixing.com/zhenghun/")
                 || href.startsWith("http://"+city+".baixing.com/nanzhaonv/")
@@ -80,13 +81,6 @@ public class MyCrawler extends WebCrawler {
                 }
             }
             list.add(personInfo);
-//            System.out.println("description: " + doc.getElementsByClass("viewad-detail").text());
-//            try {
-//                ExcelUtils.generateExcelFile(list);
-//            } catch (IOException e) {
-//                System.out.println("generate excel failed!");
-//                e.printStackTrace();
-//            }
         }
     }
 }
