@@ -19,9 +19,17 @@ public class CsiCrawlerCrawlerControllerFactory  {
 //    }
 
     public static void main(String[] args) {
+        Pattern FILTERS = Pattern.compile(".*(\\.(css|js|gif|jpg"
+                + "|png|mp3|mp4|zip|gz))$");
         Pattern URLFILTERS = Pattern.compile("(http://)\\S*\\.baixing.com\\/\\S+\\/\\ba\\d+\\.html\\?from=regular");
-        String href ="http://shanghai.baixing.com/jiaoyouqun/a888.html?from=regular";
-        System.out.println(URLFILTERS.matcher(href).matches());
+        Pattern URL_P1 = Pattern.compile("(http://)\\S*\\.baixing.com\\/nanzhaov\\/\\S*");
+        Pattern URL_P2 = Pattern.compile("(http://)\\S*\\.baixing.com\\/juhui\\/\\S*");
+        Pattern URL_P3 = Pattern.compile("(http://)\\S*\\.baixing.com\\/zhenghun\\/\\S*");
+        String href ="http://beijing.baixing.com/huodong/?page=1";
+        System.out.println(!FILTERS.matcher(href).matches()
+                && URLFILTERS.matcher(href).matches() && (URL_P1.matcher(href).matches()
+                || URL_P2.matcher(href).matches()
+                || URL_P3.matcher(href).matches()));
         Random random = new Random();
         System.out.println(random.nextInt(10));
 

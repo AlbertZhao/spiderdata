@@ -22,23 +22,23 @@ public class SpiderdataApplication {
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SpiderdataApplication.class, args);
-		String city = null;
-		boolean enableProxy = true;
+		String city = "china";
+		boolean enableProxy = false;
 		String proxyIP = null;
 		String proxyPort = null;
 		if (args.length>0) {
             city = args[0];
         }
-//        String crawlStorageFolder = "C:\\data\\";
-        String crawlStorageFolder = "/Users/zhaoshijie/Downloads/data/";
+        String crawlStorageFolder = "C:\\data\\";
+//        String crawlStorageFolder = "/Users/zhaoshijie/Downloads/data/";
         int numberOfCrawlers = 3;
 
         CrawlConfig config = new CrawlConfig();
-//        config.setMaxDepthOfCrawling(2);
+        config.setMaxDepthOfCrawling(1);
 //        config.setMaxPagesToFetch(1000);
         config.setCrawlStorageFolder(crawlStorageFolder);
         config.setUserAgentString("Opera/9.80 (Macintosh; Intel Mac OS X 10.14.1) Presto/2.12.388 Version/12.16");
-        config.setPolitenessDelay(new Random().nextInt(4) * 1000);
+        config.setPolitenessDelay(new Random().nextInt(3) * 1000);
 
 
         //Set proxy ip
@@ -83,7 +83,10 @@ public class SpiderdataApplication {
 
         RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
         ArrayList<Header> headers = new ArrayList<Header>();
-
+//        headers.add(new BasicHeader(HttpHeaders.ACCEPT, "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"));
+//        headers.add(new BasicHeader("Cookie","__trackId=154131415226368; __city=shanghai; __s=vuitkp806us3kiqqiucbcghds3; _ga=GA1.2.986150485.1541314224; _gid=GA1.2.161395943.1541314224; Hm_lvt_5a727f1b4acc5725516637e03b07d3d2=1541314225; _auth_redirect=http%3A%2F%2Fshanghai.baixing.com%2Fhuodong%2F%3Fpage%3D1; Hm_lpvt_5a727f1b4acc5725516637e03b07d3d2=1541321600"));
+//        headers.add(new BasicHeader("Connection", "keep-alive"));
+//        headers.add(new BasicHeader("Remote Address", "127.0.0.1:1080"));
         //Create Crawler controller
         for (int i=1; i<=100; i++) {
             if (enableProxy) {
@@ -98,12 +101,8 @@ public class SpiderdataApplication {
                 } else if (proxyObjs != null && proxyObjs.size()>0) {
                     Random random = new Random();
                     ProxyObj proxyObj = proxyObjs.get(random.nextInt(proxyObjs.size()));
-                    config.setProxyHost(proxyObj.getProxyIP());
-                    config.setProxyPort(Integer.valueOf(proxyObj.getProxyPort()));
-                    Header header = new BasicHeader("X-Forwarded-For", proxyObj.getProxyIP());
-                    Header xRealIP= new BasicHeader("X-Real-IP", proxyIP);
-                    headers.add(xRealIP);
-                    headers.add(header);
+                    Header reffer = new BasicHeader(HttpHeaders.REFERER,proxyObj.getProxyIP());
+                    headers.add(reffer);
                     System.out.println("Proxy ip is ========================> " + proxyObj.getProxyIP() + ":" + proxyObj.getProxyPort());
                 }
             }
@@ -126,7 +125,6 @@ public class SpiderdataApplication {
             if (city != null){
                 System.out.println("From City " + city + "start!" );
                 controller.addSeed("http://" + city + ".baixing.com/huodong/?page=" + i);
-                MyCrawler.city = city;
             } else {
                 controller.addSeed("http://shanghai.baixing.com/huodong/?page=" + i);
             }
@@ -134,7 +132,7 @@ public class SpiderdataApplication {
 
 
             try {
-                ExcelUtils.generateExcelFile(MyCrawler.list,"C:\\data\\");
+                ExcelUtils.generateExcelFile(MyCrawler.list,crawlStorageFolder);
             } catch (IOException e) {
                 System.out.println("generate excel failed!");
                 e.printStackTrace();
